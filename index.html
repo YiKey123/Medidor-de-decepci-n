@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Luz</title>
+    <style>
+        :root {
+            --meter-color: hsl(0, 80%, 50%); /* Inicia en rojo */
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- PANTALLA PRINCIPAL --- */
+        #main-screen {
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        p.message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #cccccc;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- MEDIDOR --- */
+        .meter-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+
+        .emoji-display {
+            font-size: 5rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 20px var(--meter-color);
+        }
+
+        .percentage {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--meter-color);
+            transition: color 0.3s ease;
+        }
+
+        /* Estilo del Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 80%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            border: 3px solid var(--meter-color);
+            transition: border-color 0.3s ease;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 10px;
+            cursor: pointer;
+            background: linear-gradient(to right, #00c853, #ffd600, #ff1744);
+            border-radius: 5px;
+        }
+
+        /* --- BOTÓN DE PELIGRO --- */
+        .danger-btn {
+            background-color: transparent;
+            color: #ff1744;
+            border: 2px solid #ff1744;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .danger-btn:hover {
+            background-color: #ff1744;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+        }
+
+        /* --- MODAL DE CONFIRMACIÓN --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #ff1744;
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.3);
+        }
+
+        .modal h2 { color: #ff1744; margin-bottom: 15px; }
+        .modal p { margin-bottom: 25px; line-height: 1.5; }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .btn-cancel {
+            background: #555; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer;
+        }
+        .btn-confirm {
+            background: #ff1744; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+
+        /* --- PANTALLA DE DESPEDIDA --- */
+        #goodbye-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #goodbye-screen h1 {
+            font-size: 2rem;
+            color: #888;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="main-screen">
+        <h1>Medidor para saber si Luz está lista para hablar las cosas</h1>
+        
+        <p class="message">
+            Mira, fui tonto, inmaduro, y un bebé tutti frutti, y lo siento, pero dame una oportunidad ok? Solo una más.<br><br>
+            Cada noche revisaré este medidor, y sabré qué tan molesta/decepcionada sigues conmigo.<br>
+            Cuando baje a 0, sabré que pasó el tiempo suficiente y podemos hablar sobre nuestra situación.<br><br>
+            Si antes de que eso pase, decides que realmente ya no quieres volver a intentarlo (cosa que entenderé) simplemente aprieta el botón de abajo.
+            Debes estar segura de tu decisión, porque de ese botón no hay vuelta atrás. Que estés bien Luz, te quiero.
+        </p>
+
+        <div class="meter-container">
+            <div class="emoji-display" id="emoji">😡</div>
+            <div class="percentage" id="percentage-text">100%</div>
+            <input type="range" id="meter-slider" min="0" max="100" value="100" dir="rtl">
+        </div>
+
+        <button class="danger-btn" id="btn-danger">
+            ⚠️ TERMINAR ESTO
+        </button>
+    </div>
+
+    <div id="goodbye-screen">
+        <h1>Tuvimos bonitos momentos no?<br>Adiós Luz, y de nuevo, lo siento</h1>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>⚠️ ADVERTENCIA</h2>
+            <p>De esto no hay vuelta atrás. Al confirmar, la página se cerrará para siempre y será la confirmación de que ya no quieres darme otra oportunidad.<br><br>¿Estás completamente segura?</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" id="btn-cancel">No, me equivoqué</button>
+                <button class="btn-confirm" id="btn-confirm">Sí, terminar todo</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // ==========================================
+        // ⚠️ COLOCA AQUÍ TU CONFIGURACIÓN DE FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'luzStatus');
+
+        // Elementos del DOM
+        const slider = document.getElementById('meter-slider');
+        const percentageText = document.getElementById('percentage-text');
+        const emoji = document.getElementById('emoji');
+        const mainScreen = document.getElementById('main-screen');
+        const goodbyeScreen = document.getElementById('goodbye-screen');
+        const btnDanger = document.getElementById('btn-danger');
+        const modal = document.getElementById('modal');
+        const btnCancel = document.getElementById('btn-cancel');
+        const btnConfirm = document.getElementById('btn-confirm');
+
+        // Función para actualizar UI basada en el valor (0 a 100)
+        function updateUI(value) {
+            percentageText.innerText = value + '%';
+            
+            // Lógica de colores (HSL: 0 = Rojo, 120 = Verde)
+            // Si el slider es 100, hue es 0. Si el slider es 0, hue es 120.
+            const hue = 120 - (value * 1.2);
+            document.documentElement.style.setProperty('--meter-color', `hsl(${hue}, 80%, 50%)`);
+
+            // Lógica de Emojis
+            if (value >= 80) emoji.innerText = '😡';
+            else if (value >= 60) emoji.innerText = '😠';
+            else if (value >= 40) emoji.innerText = '😐';
+            else if (value >= 20) emoji.innerText = '🙂';
+            else emoji.innerText = '😊';
+        }
+
+        // Escuchar cambios en tiempo real desde Firebase
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Si ella apretó el botón de terminar
+                if (data.isOver) {
+                    mainScreen.style.display = 'none';
+                    modal.style.display = 'none';
+                    goodbyeScreen.style.display = 'flex';
+                } else {
+                    // Actualizar el slider con el valor de la base de datos
+                    slider.value = data.level;
+                    updateUI(data.level);
+                }
+            } else {
+                // Estado inicial si la base de datos está vacía
+                set(dbRef, { level: 100, isOver: false });
+            }
+        });
+
+        // Cuando el usuario (o Luz) mueve el slider, se envía a Firebase
+        slider.addEventListener('input', (e) => {
+            const newValue = e.target.value;
+            updateUI(newValue); // Actualización visual local instantánea
+            set(dbRef, { level: parseInt(newValue), isOver: false }); // Sincronización global
+        });
+
+        // Lógica del botón de peligro y modal
+        btnDanger.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        btnCancel.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        btnConfirm.addEventListener('click', () => {
+            // Actualizar Firebase para que se cierre para siempre en todos los dispositivos
+            set(dbRef, { level: slider.value, isOver: true });
+        });
+    </script>
+</body>
+</html>
