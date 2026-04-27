@@ -10,14 +10,10 @@
             --bg-color: #121212;
             --text-color: #f0f0f0;
             --box-bg: rgba(255, 255, 255, 0.05);
+            --happy-gold: #ffd700;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
 
         body {
             background-color: var(--bg-color);
@@ -27,322 +23,145 @@
             align-items: center;
             min-height: 100vh;
             padding: 30px 20px;
-            transition: background-color 0.5s ease;
+            overflow-x: hidden;
         }
 
         #main-screen {
-            max-width: 600px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            color: #ffffff;
-            text-align: center;
-            margin-bottom: 5px;
+            max-width: 600px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px;
         }
 
         .message-box {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #cccccc;
-            background: var(--box-bg);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            text-align: center;
+            font-size: 1.1rem; line-height: 1.6; color: #cccccc; background: var(--box-bg);
+            padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .instructions {
-            font-size: 1rem;
-            color: #aaa;
-            text-align: center;
-            font-style: italic;
-        }
+        .instructions { font-size: 0.95rem; color: #aaa; text-align: center; }
 
-        /* --- SECCIÓN DE MENSAJES (INPUT) --- */
-        .input-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: var(--box-bg);
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        .input-section h3 {
-            color: #fff;
-            font-size: 1.2rem;
-            text-align: left;
+        /* --- MENSAJES Y MEDIDOR --- */
+        .input-section, .meter-container {
+            width: 100%; background: var(--box-bg); padding: 25px; border-radius: 15px; display: flex; flex-direction: column; gap: 15px;
         }
 
         textarea {
-            width: 100%;
-            min-height: 100px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid #444;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            resize: vertical;
-            font-size: 1rem;
+            width: 100%; min-height: 80px; background: rgba(0,0,0,0.3); border: 1px solid #444;
+            color: white; padding: 12px; border-radius: 10px; resize: none;
         }
 
-        textarea:focus {
-            outline: none;
-            border-color: #888;
-        }
+        .emoji-display { font-size: 4rem; text-shadow: 0 0 15px var(--meter-color); text-align: center; }
+        .percentage { font-size: 1.8rem; font-weight: bold; color: var(--meter-color); text-align: center; }
 
-        .btn-normal {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            align-self: flex-end;
-            font-weight: bold;
-        }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { height: 10px; background: linear-gradient(to right, #00c853, #ffd600, #ff1744); border-radius: 5px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 30px; width: 30px; border-radius: 50%; background: #fff; margin-top: -10px; border: 3px solid var(--meter-color); cursor: pointer; }
 
-        .btn-normal:hover { background: #555; }
+        /* --- BOTONES --- */
+        button { cursor: pointer; font-weight: bold; border: none; border-radius: 8px; transition: 0.3s; }
+        .btn-save { background: #4caf50; color: white; padding: 12px; font-size: 1rem; }
+        .btn-forgive { background: #ffd700; color: #000; padding: 18px; font-size: 1.2rem; width: 100%; box-shadow: 0 0 15px rgba(255,215,0,0.4); margin-top: 10px; }
+        .btn-danger { background: transparent; color: #ff1744; border: 2px solid #ff1744; padding: 12px; width: 100%; }
+        .btn-danger:hover { background: #ff1744; color: white; }
 
-        /* --- MEDIDOR --- */
-        .meter-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            background: var(--box-bg);
-            padding: 30px 20px;
-            border-radius: 15px;
-            gap: 15px;
-        }
+        /* --- HISTORIAL --- */
+        .msg-item { background: rgba(255,255,255,0.08); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #666; width: 100%; }
+        .msg-date { font-size: 0.75rem; color: #888; display: block; margin-bottom: 5px; }
 
-        .emoji-display {
-            font-size: 5rem;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 20px var(--meter-color);
-        }
-
-        .percentage {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--meter-color);
-            transition: color 0.3s ease;
-        }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 90%;
-            background: transparent;
-            margin: 15px 0;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 35px;
-            width: 35px;
-            border-radius: 50%;
-            background: #fff;
-            cursor: pointer;
-            margin-top: -12px;
-            box-shadow: 0 0 15px rgba(255,255,255,0.4);
-            border: 4px solid var(--meter-color);
-            transition: border-color 0.3s ease;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 12px;
-            cursor: pointer;
-            background: linear-gradient(to right, #00c853, #ffd600, #ff1744);
-            border-radius: 6px;
-        }
-
-        .btn-save {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .btn-save:hover { background: #45a049; }
-
-        /* --- LISTA DE MENSAJES --- */
-        .messages-list-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .msg-item {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #888;
-            text-align: left;
-        }
-
-        .msg-date {
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .msg-text {
-            font-size: 1rem;
-            line-height: 1.4;
-            white-space: pre-wrap; /* Respeta los saltos de línea del textarea */
-        }
-
-        /* --- BOTÓN DE PELIGRO --- */
-        .danger-btn {
-            background-color: transparent;
-            color: #ff1744;
-            border: 2px solid #ff1744;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .danger-btn:hover {
-            background-color: #ff1744;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
-        }
-
-        /* --- MODALES Y DESPEDIDA --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid #ff1744;
-            box-shadow: 0 0 30px rgba(255, 23, 68, 0.3);
-        }
-
-        .modal h2 { color: #ff1744; margin-bottom: 15px; }
-        .modal p { margin-bottom: 25px; line-height: 1.5; }
+        /* --- PANTALLAS FINALES --- */
+        #goodbye-screen, #forgive-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; position: relative; }
         
-        .modal-buttons {
-            display: flex;
-            justify-content: space-around;
+        #forgive-screen { background: radial-gradient(circle, #2c3e50 0%, #000 100%); width: 100%; }
+        #forgive-screen h1 { font-size: 3rem; color: var(--happy-gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); z-index: 10; margin-bottom: 10px; }
+        .happy-subtext { font-size: 1.3rem; color: white; z-index: 10; margin-bottom: 25px; }
+
+        /* --- CONTENEDOR DE YOUTUBE --- */
+        .video-container {
+            z-index: 10;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            margin-bottom: 20px;
+            max-width: 100%;
         }
 
-        .btn-cancel { background: #555; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; }
-        .btn-confirm { background: #ff1744; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        #goodbye-screen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
+        /* --- SERPENTINA (CSS CONFETTI) --- */
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall 3s linear infinite; top: -10px; }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
-        #goodbye-screen h1 {
-            font-size: 2rem;
-            color: #888;
-            font-weight: normal;
-            line-height: 1.5;
-        }
-
+        /* --- MODALES --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: #1e1e1e; padding: 30px; border-radius: 15px; border: 1px solid #ff1744; text-align: center; max-width: 90%; }
+        .btn-confirm { background: #ff1744; color: white; padding: 10px 20px; }
     </style>
 </head>
 <body>
 
     <div id="main-screen">
-        <h1>Medidor para saber si Luz está lista para hablar las cosas</h1>
+        <h1>Para Luz</h1>
         
         <div class="message-box">
             Mira, fui tonto, inmaduro, y un bebé tutti frutti, y lo siento, pero dame una oportunidad ok? Solo una más.<br><br>
-            Cada noche revisaré este medidor, y sabré qué tan molesta/decepcionada sigues conmigo.<br>
-            Cuando baje a 0, sabré que pasó el tiempo suficiente y podemos hablar sobre nuestra situación.<br><br>
-            Si antes de que eso pase, decides que realmente ya no quieres volver a intentarlo (cosa que entenderé) simplemente aprieta el botón del final.
-            Debes estar segura de tu decisión, porque de ese botón no hay vuelta atrás. Que estés bien Luz, te quiero.
+            Cada noche revisaré este medidor, y sabré qué tan molesta/decepcionada sigues conmigo.<br><br>
+            Si decides que puedes perdonarme, aprieta el botón, yo lo veré, y te escribiré.<br><br>
+            Si decides que realmente ya no quieres volver a intentarlo, aprieta el botón rojo al final.
         </div>
 
-        <p class="instructions">
-            Si quieres, puedes poner algún comentario sobre tu día, y enviarlo, todos tus comentarios aparecerán al final.<br><br>
-            Para que funcione el medidor, mueve el círculo blanco de izquierda a derecha, y luego dale a Guardar estado.
-        </p>
-
         <div class="input-section">
-            <h3>Espacio para mensajes</h3>
-            <textarea id="msg-input" placeholder="Escribe tu mensaje aquí..."></textarea>
-            <button class="btn-normal" id="btn-send-msg">Enviar</button>
+            <h3 style="color: white;">Espacio para mensajes</h3>
+            <textarea id="msg-input" placeholder="Escribe lo que sientas..."></textarea>
+            <button class="btn-save" id="btn-send-msg" style="background: #333;">Enviar comentario</button>
         </div>
 
         <div class="meter-container">
             <div class="emoji-display" id="emoji">😡</div>
             <div class="percentage" id="percentage-text">100%</div>
             <input type="range" id="meter-slider" min="0" max="100" value="100" dir="rtl">
-            <button class="btn-save" id="btn-save-meter">Guardar estado</button>
+            <button class="btn-save" id="btn-save-meter">Guardar estado del medidor</button>
         </div>
 
-        <div class="messages-list-container" id="messages-list">
-            </div>
+        <div id="messages-list" style="width: 100%;"></div>
 
-        <button class="danger-btn" id="btn-danger">
-            ⚠️ TERMINAR ESTO
-        </button>
+        <button class="btn-forgive" id="btn-forgive">🌟 ESTOY LISTA PARA PERDONARTE</button>
+
+        <button class="btn-danger" id="btn-danger">⚠️ TERMINAR ESTO</button>
     </div>
 
     <div id="goodbye-screen">
-        <h1>Tuvimos bonitos momentos no?<br>Adiós Luz, y de nuevo, lo siento.</h1>
+        <h1 style="color: #666;">Tuvimos bonitos momentos no?<br>Adiós Luz, y de nuevo, lo siento.</h1>
     </div>
 
-    <div class="modal-overlay" id="modal">
+    <div id="forgive-screen">
+        <div id="confetti-container"></div>
+        
+        <h1>¡Gracias Luz! ❤️</h1>
+        <p class="happy-subtext">Te quiero muchísimo. <br> En un momento te escribo...</p>
+        
+        <div class="video-container">
+            <iframe width="320" height="180" src="https://www.youtube.com/embed/m-Wn5-PWIMU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div style="font-size: 3rem; z-index: 10;">✨🌻🌈🕺✨</div>
+    </div>
+
+    <div class="modal-overlay" id="modal-danger">
         <div class="modal">
-            <h2>⚠️ ADVERTENCIA</h2>
-            <p>De esto no hay vuelta atrás. Al confirmar, la página se cerrará para siempre y será la confirmación de que ya no quieres darme otra oportunidad.<br><br>¿Estás completamente segura?</p>
-            <div class="modal-buttons">
-                <button class="btn-cancel" id="btn-cancel">No, me equivoqué</button>
-                <button class="btn-confirm" id="btn-confirm">Sí, terminar todo</button>
-            </div>
+            <h2 style="color: #ff1744;">⚠️ ¿ESTÁS SEGURA?</h2>
+            <p>Si confirmas esto, ya no habrá vuelta atrás. <br>Se acabó.</p><br>
+            <button class="btn-save" onclick="document.getElementById('modal-danger').style.display='none'">Cancelar</button>
+            <button class="btn-confirm" id="confirm-danger">Sí, terminar todo</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-forgive">
+        <div class="modal" style="border-color: var(--happy-gold);">
+            <h2 style="color: var(--happy-gold);">✨ ¿PERDONAR?</h2>
+            <p>¿Estás lista para intentarlo una vez más?</p><br>
+            <button class="btn-save" onclick="document.getElementById('modal-forgive').style.display='none'">Aún no</button>
+            <button class="btn-save" id="confirm-forgive" style="background: var(--happy-gold); color: black;">¡Sí, perdonar!</button>
         </div>
     </div>
 
     <script type="module">
-        // Importamos también "push" para agregar elementos a una lista
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -359,132 +178,86 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        
-        // Referencias a la base de datos
         const statusRef = ref(db, 'luzStatus');
-        const messagesRef = ref(db, 'luzMessages');
+        const msgsRef = ref(db, 'luzMessages');
 
-        // Elementos DOM
         const slider = document.getElementById('meter-slider');
-        const percentageText = document.getElementById('percentage-text');
         const emoji = document.getElementById('emoji');
-        const btnSaveMeter = document.getElementById('btn-save-meter');
-        
-        const msgInput = document.getElementById('msg-input');
-        const btnSendMsg = document.getElementById('btn-send-msg');
-        const messagesList = document.getElementById('messages-list');
-        
-        const mainScreen = document.getElementById('main-screen');
-        const goodbyeScreen = document.getElementById('goodbye-screen');
-        const btnDanger = document.getElementById('btn-danger');
-        const modal = document.getElementById('modal');
-        const btnCancel = document.getElementById('btn-cancel');
-        const btnConfirm = document.getElementById('btn-confirm');
+        const pText = document.getElementById('percentage-text');
 
-        // Función visual del medidor
-        function updateUI(value) {
-            percentageText.innerText = value + '%';
-            const hue = 120 - (value * 1.2);
+        function updateUI(val) {
+            pText.innerText = val + '%';
+            const hue = 120 - (val * 1.2);
             document.documentElement.style.setProperty('--meter-color', `hsl(${hue}, 80%, 50%)`);
-
-            if (value >= 80) emoji.innerText = '😡';
-            else if (value >= 60) emoji.innerText = '😠';
-            else if (value >= 40) emoji.innerText = '😐';
-            else if (value >= 20) emoji.innerText = '🙂';
+            if (val >= 80) emoji.innerText = '😡';
+            else if (val >= 50) emoji.innerText = '😐';
+            else if (val >= 20) emoji.innerText = '🙂';
             else emoji.innerText = '😊';
         }
 
-        // 1. Escuchar Estado General (Medidor y si terminó)
-        onValue(statusRef, (snapshot) => {
-            const data = snapshot.val();
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#f2d74e', '#95c3de', '#ff9a91', '#f2d74e', '#a220ad'];
+            for (let i = 0; i < 100; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                c.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(c);
+            }
+        }
+
+        // ESCUCHAR ESTADO
+        onValue(statusRef, (snap) => {
+            const data = snap.val();
             if (data) {
                 if (data.isOver) {
-                    mainScreen.style.display = 'none';
-                    modal.style.display = 'none';
-                    goodbyeScreen.style.display = 'flex';
+                    document.getElementById('main-screen').style.display = 'none';
+                    document.getElementById('goodbye-screen').style.display = 'flex';
+                } else if (data.isForgiven) {
+                    document.getElementById('main-screen').style.display = 'none';
+                    document.getElementById('forgive-screen').style.display = 'flex';
+                    createConfetti();
                 } else {
-                    // Solo actualizamos el slider si no lo estamos tocando en este instante
                     slider.value = data.level;
                     updateUI(data.level);
                 }
-            } else {
-                set(statusRef, { level: 100, isOver: false });
             }
         });
 
-        // Solo actualiza visualmente al deslizar
-        slider.addEventListener('input', (e) => {
-            updateUI(e.target.value);
-        });
+        // ACCIONES
+        slider.oninput = (e) => updateUI(e.target.value);
+        
+        document.getElementById('btn-save-meter').onclick = () => {
+            set(statusRef, { level: parseInt(slider.value), isOver: false, isForgiven: false });
+            alert("Estado guardado");
+        };
 
-        // Guarda en Firebase solo al presionar el botón "Guardar estado"
-        btnSaveMeter.addEventListener('click', () => {
-            set(statusRef, { level: parseInt(slider.value), isOver: false });
-            
-            // Efecto visual de guardado exitoso
-            const originalText = btnSaveMeter.innerText;
-            btnSaveMeter.innerText = "¡Guardado!";
-            btnSaveMeter.style.background = "#2e7d32";
-            setTimeout(() => {
-                btnSaveMeter.innerText = originalText;
-                btnSaveMeter.style.background = "#4caf50";
-            }, 2000);
-        });
-
-        // 2. Enviar Mensajes a Firebase
-        btnSendMsg.addEventListener('click', () => {
-            const texto = msgInput.value.trim();
-            if (texto !== "") {
-                // Obtener fecha y hora local
-                const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                const fechaActual = new Date().toLocaleDateString('es-ES', opcionesFecha);
-                
-                // Subir a Firebase (push genera un ID único automático)
-                push(messagesRef, {
-                    texto: texto,
-                    fecha: fechaActual
-                });
-                
-                msgInput.value = ""; // Limpiar textarea
-                
-                // Efecto visual de enviado
-                btnSendMsg.innerText = "¡Enviado!";
-                setTimeout(() => { btnSendMsg.innerText = "Enviar"; }, 2000);
+        document.getElementById('btn-send-msg').onclick = () => {
+            const t = document.getElementById('msg-input').value;
+            if(t) {
+                push(msgsRef, { texto: t, fecha: new Date().toLocaleString() });
+                document.getElementById('msg-input').value = "";
             }
-        });
+        };
 
-        // 3. Escuchar y Mostrar la Lista de Mensajes
-        onValue(messagesRef, (snapshot) => {
-            messagesList.innerHTML = ''; // Limpiar lista
-            snapshot.forEach((childSnapshot) => {
-                const mensaje = childSnapshot.val();
-                
-                const divItem = document.createElement('div');
-                divItem.className = 'msg-item';
-                
-                const spanDate = document.createElement('span');
-                spanDate.className = 'msg-date';
-                spanDate.innerText = mensaje.fecha;
-                
-                const pText = document.createElement('div');
-                pText.className = 'msg-text';
-                pText.innerText = mensaje.texto;
-                
-                divItem.appendChild(spanDate);
-                divItem.appendChild(pText);
-                
-                // Insertar al principio para que los más nuevos salgan arriba, 
-                // o usar appendChild si quieres que salgan abajo.
-                messagesList.prepend(divItem); 
+        onValue(msgsRef, (snap) => {
+            const list = document.getElementById('messages-list');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                const m = child.val();
+                list.innerHTML = `<div class="msg-item"><span class="msg-date">${m.fecha}</span>${m.texto}</div>` + list.innerHTML;
             });
         });
 
-        // 4. Lógica de terminar todo
-        btnDanger.addEventListener('click', () => { modal.style.display = 'flex'; });
-        btnCancel.addEventListener('click', () => { modal.style.display = 'none'; });
-        btnConfirm.addEventListener('click', () => {
-            set(statusRef, { level: slider.value, isOver: true });
-        });
+        // LÓGICA DE BOTONES FINALES
+        document.getElementById('btn-danger').onclick = () => document.getElementById('modal-danger').style.display='flex';
+        document.getElementById('confirm-danger').onclick = () => set(statusRef, { level: slider.value, isOver: true, isForgiven: false });
+
+        document.getElementById('btn-forgive').onclick = () => document.getElementById('modal-forgive').style.display='flex';
+        document.getElementById('confirm-forgive').onclick = () => set(statusRef, { level: slider.value, isOver: false, isForgiven: true });
+
     </script>
 </body>
 </html>
