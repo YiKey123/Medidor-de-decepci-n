@@ -6,7 +6,7 @@
     <title>Para Luz</title>
     <style>
         :root {
-            --meter-color: hsl(0, 80%, 50%); /* Inicia en rojo */
+            --meter-color: hsl(0, 80%, 50%);
             --bg-color: #121212;
             --text-color: #f0f0f0;
         }
@@ -31,7 +31,6 @@
             transition: background-color 0.5s ease;
         }
 
-        /* --- PANTALLA PRINCIPAL --- */
         #main-screen {
             max-width: 600px;
             width: 100%;
@@ -57,7 +56,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* --- MEDIDOR --- */
         .meter-container {
             display: flex;
             flex-direction: column;
@@ -79,7 +77,6 @@
             transition: color 0.3s ease;
         }
 
-        /* Estilo del Slider */
         input[type=range] {
             -webkit-appearance: none;
             width: 80%;
@@ -107,7 +104,6 @@
             border-radius: 5px;
         }
 
-        /* --- BOTÓN DE PELIGRO --- */
         .danger-btn {
             background-color: transparent;
             color: #ff1744;
@@ -130,7 +126,6 @@
             box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
         }
 
-        /* --- MODAL DE CONFIRMACIÓN --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -166,13 +161,13 @@
             background: #ff1744; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; font-weight: bold;
         }
 
-        /* --- PANTALLA DE DESPEDIDA --- */
         #goodbye-screen {
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            padding: 20px;
         }
 
         #goodbye-screen h1 {
@@ -209,7 +204,7 @@
     </div>
 
     <div id="goodbye-screen">
-        <h1>Tuvimos bonitos momentos no?<br>Adiós Luz, y de nuevo, lo siento</h1>
+        <h1>Tuvimos bonitos momentos no?<br>Adiós Luz, y de nuevo, lo siento.</h1>
     </div>
 
     <div class="modal-overlay" id="modal">
@@ -227,17 +222,18 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        // ==========================================
-        // ⚠️ COLOCA AQUÍ TU CONFIGURACIÓN DE FIREBASE
-        // ==========================================
+        // Configuración oficial conectada a tu proyecto
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            databaseURL: "https://TU_PROYECTO.firebaseio.com",
-            projectId: "TU_PROYECTO",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
+            apiKey: "AIzaSyBONx8gKlB3jKHqw3GMqVBIwAzYOqhhONU",
+            authDomain: "medidordecepcion.firebaseapp.com",
+            // IMPORTANTE: He agregado la base de datos a mano. Si por alguna razón no conecta, 
+            // revisa en Firebase (pestaña Realtime Database) si esta URL cambia ligeramente.
+            databaseURL: "https://medidordecepcion-default-rtdb.firebaseio.com",
+            projectId: "medidordecepcion",
+            storageBucket: "medidordecepcion.firebasestorage.app",
+            messagingSenderId: "825666105725",
+            appId: "1:825666105725:web:0d224f6c1f6b4105095c14",
+            measurementId: "G-XMNCNBH262"
         };
 
         // Inicializar Firebase
@@ -256,16 +252,13 @@
         const btnCancel = document.getElementById('btn-cancel');
         const btnConfirm = document.getElementById('btn-confirm');
 
-        // Función para actualizar UI basada en el valor (0 a 100)
+        // Función para actualizar colores y emojis
         function updateUI(value) {
             percentageText.innerText = value + '%';
             
-            // Lógica de colores (HSL: 0 = Rojo, 120 = Verde)
-            // Si el slider es 100, hue es 0. Si el slider es 0, hue es 120.
             const hue = 120 - (value * 1.2);
             document.documentElement.style.setProperty('--meter-color', `hsl(${hue}, 80%, 50%)`);
 
-            // Lógica de Emojis
             if (value >= 80) emoji.innerText = '😡';
             else if (value >= 60) emoji.innerText = '😠';
             else if (value >= 40) emoji.innerText = '😐';
@@ -273,34 +266,31 @@
             else emoji.innerText = '😊';
         }
 
-        // Escuchar cambios en tiempo real desde Firebase
+        // Escuchar datos en tiempo real
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Si ella apretó el botón de terminar
                 if (data.isOver) {
                     mainScreen.style.display = 'none';
                     modal.style.display = 'none';
                     goodbyeScreen.style.display = 'flex';
                 } else {
-                    // Actualizar el slider con el valor de la base de datos
                     slider.value = data.level;
                     updateUI(data.level);
                 }
             } else {
-                // Estado inicial si la base de datos está vacía
                 set(dbRef, { level: 100, isOver: false });
             }
         });
 
-        // Cuando el usuario (o Luz) mueve el slider, se envía a Firebase
+        // Al mover el slider
         slider.addEventListener('input', (e) => {
             const newValue = e.target.value;
-            updateUI(newValue); // Actualización visual local instantánea
-            set(dbRef, { level: parseInt(newValue), isOver: false }); // Sincronización global
+            updateUI(newValue);
+            set(dbRef, { level: parseInt(newValue), isOver: false });
         });
 
-        // Lógica del botón de peligro y modal
+        // Botones del Modal
         btnDanger.addEventListener('click', () => {
             modal.style.display = 'flex';
         });
@@ -310,7 +300,6 @@
         });
 
         btnConfirm.addEventListener('click', () => {
-            // Actualizar Firebase para que se cierre para siempre en todos los dispositivos
             set(dbRef, { level: slider.value, isOver: true });
         });
     </script>
